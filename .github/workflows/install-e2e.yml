@@ -306,3 +306,5 @@ jobs:
         # means either WinGet vanished from the image or that step did not
         # work, and both are things this job should go red for.
         run: bash scripts/ci/run-install-scenario.sh e2e_winget
+
+# Rehearsal workflow registry activation

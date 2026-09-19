@@ -214,3 +214,5 @@ jobs:
             --ref "$CONTROLLER_REF" \
             -f line="$BASE_REF" \
             -f pr="$PR_NUMBER"
+
+# Rehearsal workflow registry activation

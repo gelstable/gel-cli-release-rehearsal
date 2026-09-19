@@ -362,3 +362,5 @@ jobs:
       - name: Run winget install scenario
         shell: bash
         run: bash scripts/ci/run-install-scenario.sh e2e_winget
+
+# Rehearsal workflow registry activation

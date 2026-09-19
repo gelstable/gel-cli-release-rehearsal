@@ -457,3 +457,5 @@ jobs:
             --ref "$candidate_ref" \
             -f line="$(jq -r '.line' "$RUNNER_TEMP/identity.json")" \
             -f identity="$identity"
+
+# Rehearsal workflow registry activation

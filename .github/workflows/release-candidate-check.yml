@@ -174,3 +174,5 @@ jobs:
           )
           print("stable merge gate passed")
           PY
+
+# Rehearsal workflow registry activation

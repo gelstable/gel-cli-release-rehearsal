@@ -297,3 +297,5 @@ jobs:
           gh api -X DELETE \
             "/repos/$GITHUB_REPOSITORY/git/refs/heads/$preview_ref" \
             >/dev/null || echo "preview ref already removed: $preview_ref"
+
+# Rehearsal workflow registry activation

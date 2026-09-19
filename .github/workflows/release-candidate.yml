@@ -945,3 +945,5 @@ jobs:
               "/repos/$GITHUB_REPOSITORY/git/refs/heads/$CANDIDATE_REF" \
               >/dev/null || echo "candidate ref already removed: $CANDIDATE_REF"
           fi
+
+# Rehearsal workflow registry activation
