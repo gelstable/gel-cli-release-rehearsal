@@ -1,0 +1,9 @@
+Metadata-Version: 2.4
+Name: gel-release
+Version: 0.1.0
+Requires-Python: >=3.11
+License-File: LICENSE-APACHE
+License-File: LICENSE-MIT
+Requires-Dist: jsonschema==4.25.1
+Requires-Dist: pydantic==2.11.9
+Dynamic: license-file
