@@ -187,7 +187,7 @@ section = "database"
 priority = "optional"
 depends = ""
 assets = [
-    ["target/RELEASE_TARGET/release/gel", "usr/bin/", "755"],
+    ["target/release/gel", "usr/bin/", "755"],
     ["target/completions/gel.bash", "usr/share/bash-completion/completions/gel", "644"],
     ["target/completions/_gel", "usr/share/zsh/site-functions/_gel", "644"],
     ["target/completions/gel.fish", "usr/share/fish/vendor_completions.d/gel.fish", "644"],

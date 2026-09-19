@@ -16,6 +16,8 @@ class CargoMetadataTests(unittest.TestCase):
     def test_deb_assets_install_binary_and_completions(self):
         deb = CARGO["package"]["metadata"]["deb"]
         destinations = {row[1] for row in deb["assets"]}
+        binary = next(row for row in deb["assets"] if row[1] == "usr/bin/")
+        self.assertEqual(binary[0], "target/release/gel")
         self.assertIn("usr/bin/", destinations)
         self.assertIn("usr/share/bash-completion/completions/gel", destinations)
         self.assertIn("usr/share/zsh/site-functions/_gel", destinations)
@@ -25,6 +27,8 @@ class CargoMetadataTests(unittest.TestCase):
     def test_rpm_assets_install_binary_and_completions(self):
         rpm = CARGO["package"]["metadata"]["generate-rpm"]
         destinations = {row["dest"] for row in rpm["assets"]}
+        binary = next(row for row in rpm["assets"] if row["dest"] == "/usr/bin/gel")
+        self.assertEqual(binary["source"], "target/RELEASE_TARGET/release/gel")
         self.assertIn("/usr/bin/gel", destinations)
         self.assertIn("/usr/share/bash-completion/completions/gel", destinations)
         self.assertIn("/usr/share/zsh/site-functions/_gel", destinations)

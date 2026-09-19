@@ -195,6 +195,19 @@ class ControllerTriggerContractTests(unittest.TestCase):
 
 
 class CandidateInputContractTests(unittest.TestCase):
+    def test_candidate_uv_steps_pin_a_supported_python(self):
+        workflow = _workflow("release-candidate.yml")
+        setup_steps = [
+            step
+            for job in workflow["jobs"].values()
+            for step in _steps(job)
+            if str(step.get("uses", "")).startswith("astral-sh/setup-uv@")
+        ]
+        self.assertTrue(setup_steps)
+        for step in setup_steps:
+            with self.subTest(job_step=step):
+                self.assertEqual(step.get("with", {}).get("python-version"), "3.13")
+
     def test_candidate_only_accepts_a_dispatched_json_identity(self):
         workflow = _workflow("release-candidate.yml")
         triggers = workflow["on"]
