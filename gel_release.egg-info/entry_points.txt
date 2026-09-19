@@ -1,0 +1,2 @@
+[console_scripts]
+gel-release = gel_release.cli:main
