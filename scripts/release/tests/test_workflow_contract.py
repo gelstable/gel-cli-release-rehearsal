@@ -195,6 +195,15 @@ class ControllerTriggerContractTests(unittest.TestCase):
 
 
 class CandidateInputContractTests(unittest.TestCase):
+    def test_archive_layout_checks_do_not_sigpipe_the_listing_commands(self):
+        stage = _workflow("release-candidate.yml")["jobs"]["stage"]
+        check = next(step for step in _steps(stage) if step.get("name") == "Assert archive layouts")
+        run = str(check.get("run", ""))
+        self.assertNotIn("| grep -q", run)
+        self.assertIn("tar -tzf", run)
+        self.assertIn("unzip -Z1", run)
+        self.assertEqual(run.count(">/dev/null"), 4)
+
     def test_candidate_uv_steps_pin_a_supported_python(self):
         workflow = _workflow("release-candidate.yml")
         setup_steps = [

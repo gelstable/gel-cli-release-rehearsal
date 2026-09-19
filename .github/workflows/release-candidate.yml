@@ -461,12 +461,12 @@ jobs:
         run: |
           set -euo pipefail
           for archive in dist/*.tar.gz; do
-            tar -tzf "$archive" | grep -qE '/gel$'
-            tar -tzf "$archive" | grep -q '/completions/gel.bash$'
+            tar -tzf "$archive" | grep -E '/gel$' >/dev/null
+            tar -tzf "$archive" | grep '/completions/gel.bash$' >/dev/null
           done
           for archive in dist/*.zip; do
-            unzip -Z1 "$archive" | grep -q '/gel.exe$'
-            unzip -Z1 "$archive" | grep -q '/completions/gel.ps1$'
+            unzip -Z1 "$archive" | grep '/gel.exe$' >/dev/null
+            unzip -Z1 "$archive" | grep '/completions/gel.ps1$' >/dev/null
           done
 
       - name: Select the exact unpublished draft
