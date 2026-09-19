@@ -90,3 +90,5 @@ jobs:
           toolchain: ${{ env.RUST_VERSION }}
       - name: Test
         run: ${{ matrix.command }}
+
+# Rehearsal workflow registry activation
