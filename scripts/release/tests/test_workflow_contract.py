@@ -310,6 +310,9 @@ class CandidateInputContractTests(unittest.TestCase):
         assert "releases/$existing" in text
         assert '--releases-json "$RUNNER_TEMP/reusable-release.json"' in text
         assert "the selected draft changed before asset replacement" in text
+        assert "stale_base_sha" in text
+        assert "compare/$stale_base_sha...$current_base_sha" in text
+        assert '[[ "$base_status" == ahead ]]' in text
         assert "_body_identity" not in text
         assert "find_replaceable_draft" not in text
         assert "find_reusable_draft" not in text

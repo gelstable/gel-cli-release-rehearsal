@@ -662,7 +662,10 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
         self.assertIsNotNone(selection)
         self.assertIs(selection.release, release)
         self.assertTrue(selection.reusable)
-        self.assertEqual(selection.as_dict(), {"id": 123, "stale_build_sha": ""})
+        self.assertEqual(
+            selection.as_dict(),
+            {"id": 123, "stale_build_sha": "", "stale_base_sha": ""},
+        )
 
     def test_draft_with_same_tag_but_different_line_fails_closed(self):
         identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
@@ -689,14 +692,26 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
 
     def test_same_tag_source_refresh_is_replaceable_only_for_same_line_and_pr(self):
         identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
-        stale = {**identity.as_dict(), "source_sha": "d" * 40, "build_sha": "d" * 40}
+        stale = {
+            **identity.as_dict(),
+            "base_sha": "c" * 40,
+            "source_sha": "d" * 40,
+            "build_sha": "d" * 40,
+        }
         release = self._draft(stale)
 
         selection = github_release.select_draft([release], identity)
         self.assertIs(selection.release, release)
         self.assertFalse(selection.reusable)
         self.assertEqual(selection.stale_build_sha, "d" * 40)
-        self.assertEqual(selection.as_dict(), {"id": 123, "stale_build_sha": "d" * 40})
+        self.assertEqual(
+            selection.as_dict(),
+            {
+                "id": 123,
+                "stale_build_sha": "d" * 40,
+                "stale_base_sha": "c" * 40,
+            },
+        )
 
         for changed in ("line", "pr_number"):
             different = dict(stale)

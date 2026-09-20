@@ -500,9 +500,12 @@ jobs:
             --identity-json "$RUNNER_TEMP/candidate-identity.json")"
           existing=""
           stale_build_sha=""
+          stale_base_sha=""
+          current_base_sha="$(jq -r '.base_sha' "$RUNNER_TEMP/candidate-identity.json")"
           if [[ -n "$selection" ]]; then
             existing="$(jq -r '.id // empty' <<< "$selection")"
             stale_build_sha="$(jq -r '.stale_build_sha // empty' <<< "$selection")"
+            stale_base_sha="$(jq -r '.stale_base_sha // empty' <<< "$selection")"
           fi
           phase="$(jq -r '.phase // empty' "$RUNNER_TEMP/candidate-identity.json")"
           prerelease=false
@@ -522,9 +525,17 @@ jobs:
             reselected="$(PYTHONPATH=. uv run --frozen gel-release select-draft \
               --releases-json "$RUNNER_TEMP/reusable-release.json" \
               --identity-json "$RUNNER_TEMP/candidate-identity.json")"
-            [[ "$(jq -r '.id // empty' <<< "$reselected")" == "$existing" ]] || \
+            [[ "$(jq -cS . <<< "$reselected")" == "$(jq -cS . <<< "$selection")" ]] || \
               fail "the selected draft changed before asset replacement:" \
                 "expected draft $existing"
+            if [[ -n "$stale_base_sha" ]]; then
+              base_status="$(gh api \
+                "/repos/$GITHUB_REPOSITORY/compare/$stale_base_sha...$current_base_sha" \
+                --jq '.status')"
+              [[ "$base_status" == ahead ]] || \
+                fail "draft $existing base $stale_base_sha is not an ancestor" \
+                  "of current line base $current_base_sha (status: $base_status)"
+            fi
             if [[ -n "$stale_build_sha" ]]; then
               tag_error="$RUNNER_TEMP/tag-error.txt"
               if tag_json="$(gh api "/repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" 2>"$tag_error")"; then

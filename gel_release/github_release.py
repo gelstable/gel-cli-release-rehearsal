@@ -357,11 +357,14 @@ class DraftSelection:
     the selected identity.  Otherwise the draft is a same-line, same-PR
     predecessor that a source refresh supersedes, and ``stale_build_sha``
     names the build commit its assets and tag were staged from.
+    ``stale_base_sha`` lets the workflow prove that a changed release-line
+    base moved forward before it replaces that predecessor.
     """
 
     release: Mapping[str, object]
     reusable: bool
     stale_build_sha: str | None
+    stale_base_sha: str | None
 
     def as_dict(self) -> dict[str, object]:
         """Serialize the fields the staging workflow consumes."""
@@ -369,6 +372,7 @@ class DraftSelection:
         return {
             "id": self.release.get("id"),
             "stale_build_sha": "" if self.reusable else (self.stale_build_sha or ""),
+            "stale_base_sha": "" if self.reusable else (self.stale_base_sha or ""),
         }
 
 
@@ -382,7 +386,9 @@ def select_draft(
     line.  A release carrying this exact candidate tag is either the exact
     retry draft or, under the line mutation lock, a same-line and same-PR
     draft whose source was refreshed and may be superseded.  Published
-    releases, mismatched lines or bases, and malformed records fail closed.
+    releases, mismatched lines or PRs, and malformed records fail closed. A
+    changed base is returned to the workflow, which must prove that the old
+    base is an ancestor of the current release-line base before replacement.
     """
 
     expected = _coerce_identity(identity)
@@ -410,11 +416,6 @@ def select_draft(
                 raise ValueError(
                     f"draft {expected_tag} candidate identity does not match authorized line/PR"
                 )
-            if actual.base_sha != expected.base_sha:
-                raise ValueError(
-                    f"draft {expected_tag} candidate base {actual.base_sha} "
-                    "does not match current line"
-                )
         if release.get("prerelease") is not expected_prerelease:
             raise ValueError(f"draft {expected_tag} prerelease flag does not match candidate phase")
         if selected is not None:
@@ -423,6 +424,9 @@ def select_draft(
             release=release,
             reusable=reusable,
             stale_build_sha=None if reusable else actual.build_sha,
+            stale_base_sha=(
+                None if reusable or actual.base_sha == expected.base_sha else actual.base_sha
+            ),
         )
     return selected
 

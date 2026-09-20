@@ -273,11 +273,17 @@ class CliBoundaryTests(unittest.TestCase):
             root = Path(tmp)
             reuse = self._select_draft(root, [draft], identity)
             self.assertEqual(reuse.returncode, 0, reuse.stderr)
-            self.assertEqual(json.loads(reuse.stdout), {"id": 42, "stale_build_sha": ""})
+            self.assertEqual(
+                json.loads(reuse.stdout),
+                {"id": 42, "stale_build_sha": "", "stale_base_sha": ""},
+            )
 
             replace = self._select_draft(root, [stale], identity)
             self.assertEqual(replace.returncode, 0, replace.stderr)
-            self.assertEqual(json.loads(replace.stdout), {"id": 43, "stale_build_sha": "c" * 40})
+            self.assertEqual(
+                json.loads(replace.stdout),
+                {"id": 43, "stale_build_sha": "c" * 40, "stale_base_sha": ""},
+            )
 
             none = self._select_draft(root, [], identity)
             self.assertEqual(none.returncode, 0, none.stderr)
