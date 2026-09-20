@@ -681,7 +681,10 @@ jobs:
     needs: [identity, plan, stage]
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      # GitHub only exposes unpublished drafts to identities with push access.
+      # This job does not mutate contents, but read cannot fetch the draft or
+      # download its assets for byte-for-byte verification.
+      contents: write
       attestations: read
     outputs:
       verified_candidate: ${{ steps.verify.outputs.verified_candidate }}

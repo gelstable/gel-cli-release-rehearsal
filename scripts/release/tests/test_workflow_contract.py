@@ -242,6 +242,16 @@ class CandidateInputContractTests(unittest.TestCase):
         assert "draft_release_id" in workflow["jobs"]["stage"]["outputs"]
         assert "verified_candidate" in workflow["jobs"]["verify"]["outputs"]
 
+    def test_draft_verification_token_can_read_unpublished_releases(self):
+        # GitHub only exposes draft releases to identities with push access.
+        # For GITHUB_TOKEN that requires contents: write even though this job
+        # performs no mutations; contents: read receives HTTP 403 here.
+        verify = _workflow("release-candidate.yml")["jobs"]["verify"]
+        assert verify["permissions"] == {
+            "contents": "write",
+            "attestations": "read",
+        }
+
     def test_controller_dispatch_matches_candidate_identity_input(self):
         controller = (WORKFLOWS / "release-controller.yml").read_text()
         assert "gh workflow run release-candidate.yml" in controller
@@ -421,7 +431,7 @@ class WorkflowSafetyContractTests(unittest.TestCase):
                     continue
                 assert re.search(r"uses:\s+[^@\s]+@[0-9a-f]{40}\s+#\s+.+$", line)
 
-    def test_candidate_minimizes_elevated_permissions_to_stage_and_commit(self):
+    def test_candidate_minimizes_elevated_permissions_to_jobs_that_need_them(self):
         workflow = _workflow("release-candidate.yml")
         assert workflow["permissions"] == {"contents": "read"}
         assert workflow["jobs"]["stage"]["permissions"] == {
@@ -430,7 +440,7 @@ class WorkflowSafetyContractTests(unittest.TestCase):
             "attestations": "write",
         }
         assert workflow["jobs"]["verify"]["permissions"] == {
-            "contents": "read",
+            "contents": "write",
             "attestations": "read",
         }
 
