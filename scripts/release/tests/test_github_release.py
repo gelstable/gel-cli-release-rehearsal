@@ -1805,6 +1805,14 @@ class GithubReleaseCliTests(unittest.TestCase):
         self.assertIn("gh workflow run", rendered)
         self.assertNotIn("cargo build", rendered)
 
+    def test_release_controller_can_skip_an_already_published_snapshot(self):
+        text = (REPO_ROOT / ".github" / "workflows" / "release-controller.yml").read_text()
+        self.assertNotIn("fromJSON(steps.identity.outputs.identity)", text)
+        self.assertEqual(
+            text.count("fromJSON(steps.identity.outputs.identity || '{}')"),
+            6,
+        )
+
     def test_release_controller_normalizes_all_paginated_release_pages(self):
         steps = yaml.safe_load(
             (REPO_ROOT / ".github" / "workflows" / "release-controller.yml").read_text()
