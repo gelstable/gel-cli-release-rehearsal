@@ -534,11 +534,13 @@ class StableMergeWorkflowContractTests(unittest.TestCase):
         assert "candidate" in workflow["jobs"]
         assert workflow["jobs"]["candidate"]["name"] == "stable merge gate"
 
-    def test_stable_gate_uses_read_only_permissions_and_pinned_actions(self):
+    def test_stable_gate_uses_only_draft_visibility_permissions_and_pinned_actions(self):
         workflow = _workflow("release-candidate-check.yml")
         assert workflow["permissions"] == {"contents": "read"}
         assert workflow["jobs"]["candidate"]["permissions"] == {
-            "contents": "read",
+            # GitHub hides drafts from GITHUB_TOKEN unless it has push access.
+            # The gate performs no mutation despite this visibility grant.
+            "contents": "write",
             "pull-requests": "read",
             "attestations": "read",
         }

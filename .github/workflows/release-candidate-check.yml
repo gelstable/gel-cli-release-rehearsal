@@ -27,7 +27,10 @@ jobs:
     if: github.repository == (vars.RELEASE_REPOSITORY || 'gelstable/gel-cli')
     runs-on: ubuntu-24.04
     permissions:
-      contents: read
+      # GitHub only exposes unpublished drafts to identities with push access.
+      # The gate does not mutate contents, but it must read the draft and its
+      # assets independently before allowing a merge.
+      contents: write
       pull-requests: read
       attestations: read
     steps:
