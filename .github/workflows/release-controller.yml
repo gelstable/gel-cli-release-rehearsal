@@ -365,8 +365,8 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.release-token.outputs.token }}
           PR_NUMBER: ${{ steps.request.outputs.number }}
-          EXPECTED_BASE_SHA: ${{ fromJSON(steps.identity.outputs.identity).base_sha }}
-          EXPECTED_SOURCE_SHA: ${{ fromJSON(steps.identity.outputs.identity).source_sha }}
+          EXPECTED_BASE_SHA: ${{ fromJSON(steps.identity.outputs.identity || '{}').base_sha }}
+          EXPECTED_SOURCE_SHA: ${{ fromJSON(steps.identity.outputs.identity || '{}').source_sha }}
         run: |
           set -euo pipefail
           fail() {
@@ -406,13 +406,13 @@ jobs:
           fi
 
       - name: Derive and preserve the preview build commit
-        if: steps.classify.outputs.should_run == 'true' && steps.identity.outputs.identity != '' && fromJSON(steps.identity.outputs.identity).phase != null
+        if: steps.classify.outputs.should_run == 'true' && steps.identity.outputs.identity != '' && fromJSON(steps.identity.outputs.identity || '{}').phase != null
         id: preview
         env:
           GH_TOKEN: ${{ steps.release-token.outputs.token }}
-          LINE: ${{ fromJSON(steps.identity.outputs.identity).line }}
-          TAG: v${{ fromJSON(steps.identity.outputs.identity).version }}
-          SOURCE_SHA: ${{ fromJSON(steps.identity.outputs.identity).source_sha }}
+          LINE: ${{ fromJSON(steps.identity.outputs.identity || '{}').line }}
+          TAG: v${{ fromJSON(steps.identity.outputs.identity || '{}').version }}
+          SOURCE_SHA: ${{ fromJSON(steps.identity.outputs.identity || '{}').source_sha }}
         run: |
           set -euo pipefail
           build_sha="$(uv run --frozen gel-release derive-preview-commit \
