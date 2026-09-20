@@ -1,0 +1,188 @@
+{
+  "schema_version": 2,
+  "line": "release/v7.x",
+  "pr_number": 2,
+  "phase": null,
+  "version": "7.11.0",
+  "tag": "v7.11.0",
+  "draft_release_id": 392228905,
+  "source_sha": "73b923a07bd21f340f188976e383cf46005668fd",
+  "source_snapshot": "13622cb8131255e88877f0d6986fc66627f743811c0daccf2a8f1867c7e28a86",
+  "build_sha": "73b923a07bd21f340f188976e383cf46005668fd",
+  "base_sha": "5b059ce17396aa0bcefd9feea90e4e0e8fb52fd9",
+  "build_date": "2026-09-20T16:57:06Z",
+  "workflow_runs": [
+    {
+      "workflow": "release-candidate.yml",
+      "run_id": 35524356791,
+      "run_attempt": 1
+    }
+  ],
+  "attestation": {
+    "predicate_type": "https://slsa.dev/provenance/v1",
+    "subject_count": 23
+  },
+  "assets": [
+    {
+      "id": 577256993,
+      "name": "BLAKE2B512SUMS",
+      "size": 3446,
+      "sha256": "0aa385bd2fe13d85cbbeb0fb287d158630ebf4fdf883cc6a135b965b4b4ef8f7",
+      "blake2b512": "ad560766e991d7c0fee08b4c4f9d1545e3552ef282122ec776d709747308d52b94dc2a2fb49a422de4b0ef9185129acc828a4ed5f1e6a827aa72730011e493eb"
+    },
+    {
+      "id": 577257014,
+      "name": "SHA256SUMS",
+      "size": 2102,
+      "sha256": "468c2949d1f1a8091896b7f9b51161dd46dfc92d1a2eeac0f15ad83ceeb2bbdd",
+      "blake2b512": "1a6e1d7dd80dce16f98102fbad5c81c4be1149b14cd6412e9dcc776954923642883f97641712eaca74366ecb04391523fe47262611ef32f4af172a5961f341f9"
+    },
+    {
+      "id": 577257043,
+      "name": "gel-7.11.0-1.aarch64.rpm",
+      "size": 48483580,
+      "sha256": "f5de8c86c5baaeabc04c40bd3543ed6b381840b09bffacfcab0fc4fdbe707850",
+      "blake2b512": "472390b6db94fc290839a3ef13a6844c7a47bbd1346d43ece8ccc9d3a1c6319f0a718dd9b75cdddd49a2b3dc5f8a9dd2a8afe75b6df345c8f6145b667230f58b"
+    },
+    {
+      "id": 577257153,
+      "name": "gel-7.11.0-1.x86_64.rpm",
+      "size": 49505613,
+      "sha256": "fe194d215cb952b58ae402a2042d8ec3abe465c314fe2cf2b044e10dfd6f5af7",
+      "blake2b512": "70898dca4ca4fe2555915e344b5ff63e47584679365e77f3c6dbf4b47883858ff97c2f5127082a62fef77667f020437b55c4affa6e765e3cf00c6a46c9a8af46"
+    },
+    {
+      "id": 577257240,
+      "name": "gel-cli-aarch64-apple-darwin",
+      "size": 25158760,
+      "sha256": "9fafd9514df896bf51247b80939f8a60fc46554138ede864376f6f6580a66f98",
+      "blake2b512": "d15907dc5640b374aa6a7b438f550d267d58823cb3e94da23acd5336e03c8a01183e308f3c0104330b75d1e089402d6e8a70cfd18a87238cbe9a8899f5a2713d"
+    },
+    {
+      "id": 577257303,
+      "name": "gel-cli-aarch64-apple-darwin.zst",
+      "size": 7943809,
+      "sha256": "c5b68b8f00b4291c1ab741098199ed856f4de0671345c37558904a5f79927410",
+      "blake2b512": "02c859f0774d8e919e6fce579a7143125249e36a14113caaa7b6ab46ec16dcef2ff425a7dd0176dd028d2d8c3ad9c7c1e4d6a0209ee915326555bfb7d72ef12b"
+    },
+    {
+      "id": 577257337,
+      "name": "gel-cli-aarch64-pc-windows-msvc.exe",
+      "size": 24402944,
+      "sha256": "1c7e43ca0722b43ee8823b584c587ab631cc2d52fdf557d3a4956e7dffc59d54",
+      "blake2b512": "69dddb968464084b49c54739b866b4976cb80e0a7cb00dd46e53e93286ea1a06be4b9482eace51f65117d1761419a255a73ec15d393d3dfbf1222d1fe75dd328"
+    },
+    {
+      "id": 577257384,
+      "name": "gel-cli-aarch64-pc-windows-msvc.exe.zst",
+      "size": 7685295,
+      "sha256": "f3d34ad855bc33c7b357e9a4dd845533ddd94c844159e3b3d827b73e61ffe4fb",
+      "blake2b512": "1070af6a94482f21da4450d3601f242449dc01e2bb5aef7df2e2b080255b4972d10c0b8140bda5005350a3d31fc42553bcbb09b5526568fd2173c0d4be3f04eb"
+    },
+    {
+      "id": 577257422,
+      "name": "gel-cli-aarch64-unknown-linux-musl",
+      "size": 299047424,
+      "sha256": "244be715f252f952ab2fa87d5812106dff633f2fbb4109d69615adadad92f3a0",
+      "blake2b512": "f129c2b7e6edc7218ced0c0434346744387a437a3f9021e93ed001600a2952064b3ac943a55732f3992843ae466ae77c6731c2fda3e6796a45bd5f8ab62953c7"
+    },
+    {
+      "id": 577257664,
+      "name": "gel-cli-aarch64-unknown-linux-musl.zst",
+      "size": 48419779,
+      "sha256": "87679af5935efee6cb32f312b62dc1f2f0067a37e674f7d5d822d84ba4935509",
+      "blake2b512": "140dae4c9d7a1aa2aa178e9d55db4718df5a971e9c905578d3ebf89b4b5d0682231f63b3ece2f633e6548740ab8f1a263eb8aca03ac9281be0d1cf267b38ad19"
+    },
+    {
+      "id": 577257734,
+      "name": "gel-cli-x86_64-pc-windows-msvc.exe",
+      "size": 29260288,
+      "sha256": "4f76a5d05694c293420b151f526b4af706861b6cefa8bb1a95f268eb87bd9030",
+      "blake2b512": "f3fa2e6e09ec9203d235a37338173d3fddd0139be93ebf7b3bf32aeef44174caacf30337b39931cee73fa5dbc46ab1e05f2cc72fc3a1e377caea5c328b31dc24"
+    },
+    {
+      "id": 577257815,
+      "name": "gel-cli-x86_64-pc-windows-msvc.exe.zst",
+      "size": 8170404,
+      "sha256": "b598289d47752561fda430de896ac491267f6c4b5a72fa285848f940267a3d83",
+      "blake2b512": "e80f2de2ef23b358eb02311261cad31e169a337eae115031927b2c3204ebacd404abc6723229b2df58cc3c252e0a623f988f4f1cf91505b8a4b99569b34bf0ec"
+    },
+    {
+      "id": 577257853,
+      "name": "gel-cli-x86_64-unknown-linux-musl",
+      "size": 295079808,
+      "sha256": "608656f0178dc8941422770135ab62249cf0518dab23794d1803c363e8a8f018",
+      "blake2b512": "705d14bcda47d4de4d07d2934e943231095b1aa9ce1b6e62afa05843d7fda119814510ae29f1f9b6210a2d51c04e466c816513e6a0230065a36a8ce4c8738ade"
+    },
+    {
+      "id": 577258245,
+      "name": "gel-cli-x86_64-unknown-linux-musl.zst",
+      "size": 49440224,
+      "sha256": "36a2b2be19762becd1d2a07aec6b77209eeb682d2c5dcea0694c186fd319bbec",
+      "blake2b512": "d5898755b8a3358435c4e6b51360c0533b348d5692c1dffe90dd12ec8944b712e47930fc72f813dcaa3a572ef0f7246cb53a62e0a3d545a197bd5be046a35377"
+    },
+    {
+      "id": 577258322,
+      "name": "gel-registry.json",
+      "size": 9821,
+      "sha256": "8c83587d69d13ecaaed951bda3fcaa73374408ff6d78ad9c5ecae6ee3e86921b",
+      "blake2b512": "a2f54f4e6f7db1e18eeca3db8d8ac5706a8d8d0bef442b810cb6b251747a51ab46ca21ff9ffcbb2e4394c243785654861e7df746125472dc4cae4f166904239f"
+    },
+    {
+      "id": 577258356,
+      "name": "gel-v7.11.0-aarch64-apple-darwin.tar.gz",
+      "size": 10690268,
+      "sha256": "8e07c0d4f9bf52d11bbcca453347355311fabfa0bb38c17020fd2dd50e284097",
+      "blake2b512": "d824306c5523e2cc99fdcd7d641316f02bc5aaf9797af1f79c14b598c7cb2bca1294b4b89a47a1cbab77ae2699f99e4a85d4379c4ef7ae2958c92bcc11372d2a"
+    },
+    {
+      "id": 577258400,
+      "name": "gel-v7.11.0-aarch64-pc-windows-msvc.zip",
+      "size": 10202659,
+      "sha256": "64d3a72e73c2562c9603d475636d8776ce5bb7090d97a9e47fcebc5c2c3215d4",
+      "blake2b512": "c992b77b79f10f2993795fe4272f5c7c61c5ecf9c903e26a4431e353b239209dfb93d657635c5a5e33600f88a56d7f69359947d7f089b036a2a324084d409b4a"
+    },
+    {
+      "id": 577258447,
+      "name": "gel-v7.11.0-aarch64-unknown-linux-musl.tar.gz",
+      "size": 68076396,
+      "sha256": "a44bc27015455e2a8ad132f4b97d2062ddbb39f875f01912f1170a58ad148169",
+      "blake2b512": "f1944a62ae22b85a76985269be5a974f6b4ed19ac959b76e017f610f0fbaae17ef36eefbde4b48e8bdec2b112d30a283efd79a5a271b5c360405a87cbb61dc67"
+    },
+    {
+      "id": 577258555,
+      "name": "gel-v7.11.0-x86_64-apple-darwin.tar.gz",
+      "size": 11355701,
+      "sha256": "8510ab9a1479429cd458d2013ce0e32651f1c4706f59405a3096e5c07139105f",
+      "blake2b512": "7e2433c755fd9cd6299abb153bb8c68a4d51d4a5b446ba92482cea1a9a8a429c54c23afba10c17c43bd9bd2c7414abbf0c1f0dc4cc497052259dd1ff2449ba62"
+    },
+    {
+      "id": 577258595,
+      "name": "gel-v7.11.0-x86_64-pc-windows-msvc.zip",
+      "size": 10894313,
+      "sha256": "38e2c275c893d7db59d9d2cfdaa072f06c4fb781896443e6e150e39897407845",
+      "blake2b512": "63f145cb52d9c6c5a4094f40e97f319c887eaaca44549a76cbfbd85a7eadb779b972e6aa8b044a9a05b5c96eba2d8be7f3bb9b792adb0c00fbfe0b0bd2bd663d"
+    },
+    {
+      "id": 577258636,
+      "name": "gel-v7.11.0-x86_64-unknown-linux-musl.tar.gz",
+      "size": 69156988,
+      "sha256": "8e218fbf412c30854b1bc6a3f9e995ec38b9cd7c50a5a139dffb9f3a26969bf9",
+      "blake2b512": "3da1713dd65104e2017f566f4f9578a6579eb234207b2963669ee7467020eda79857e8449aa84b038acb365ed85eeba1295957e8200c879994f03d88467e7358"
+    },
+    {
+      "id": 577258741,
+      "name": "gel_7.11.0_amd64.deb",
+      "size": 46678372,
+      "sha256": "9e0f43cb554344b1832625186fa578d0580982cd95ae5d8e78e024c9978a0305",
+      "blake2b512": "7a3cc7f05fa9edd539d35f64635d5f97a139ce0b15f610869d7b4395c63626ad0c53827f08e82c38a2da74415bc5b3fc124c2ae89624bf9b8ce5e7d7d81ba598"
+    },
+    {
+      "id": 577258838,
+      "name": "gel_7.11.0_arm64.deb",
+      "size": 45009884,
+      "sha256": "f0cb448546d8e3ed0dfed32fa4b9c7d561debe0282420b940d615f2c745e5206",
+      "blake2b512": "f5bdfb0a7e5233770f6cb57ce084e960bb57a0c47fc76bbf89cf85cae85e493dfacebdc7fc741bbef580a7ad1d7dcbf8b00aff078665ff5a9a4521bc369d8858"
+    }
+  ]
+}
