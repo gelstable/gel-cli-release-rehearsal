@@ -21,6 +21,16 @@ const FIXTURE_VERSION: &str = "999.0.0";
 /// directory. CI runners set it; a developer's laptop does not.
 const ALLOW_GLOBAL_CONFIG: &str = "GEL_E2E_ALLOW_GLOBAL_CONFIG";
 
+fn fixture_channel(version: &str) -> &'static str {
+    if version.contains("-dev.") {
+        "nightly"
+    } else if version.contains('-') {
+        "testing"
+    } else {
+        "stable"
+    }
+}
+
 pub fn run() {
     let source = scenario::binary_under_test();
     let scenario = DirectScenario::new().expect("prepare the direct scenario");
@@ -251,12 +261,14 @@ impl DirectScenario {
         });
         fs_err::write(root.join("index.json"), serde_json::to_vec(&index)?)?;
 
-        // `channel()` derives the channel from `CARGO_PKG_VERSION`, which is a
-        // plain release version, so the upgrade looks in `stable`.
+        // Match `cli::upgrade::channel_of`: release-candidate harnesses compile
+        // this test from a prerelease-derived commit, so hardcoding `stable`
+        // makes their direct-upgrade scenario miss the fixture entirely.
+        let channel = fixture_channel(env!("CARGO_PKG_VERSION"));
         let registry = json!({
             "schema_version": 1,
             "indexes": [{
-                "channel": "stable",
+                "channel": channel,
                 "platform": platform,
                 "ref": "index.json",
             }],
@@ -355,5 +367,17 @@ impl Scenario for DirectScenario {
         {
             eprintln!("cleanup: could not restore the CLI config: {error:#}");
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fixture_channel;
+
+    #[test]
+    fn fixture_channel_matches_the_binary_upgrade_channel() {
+        assert_eq!(fixture_channel("7.11.0"), "stable");
+        assert_eq!(fixture_channel("7.11.0-rc.1"), "testing");
+        assert_eq!(fixture_channel("7.11.0-dev.42"), "nightly");
     }
 }
