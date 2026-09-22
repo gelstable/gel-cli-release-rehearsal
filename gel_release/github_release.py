@@ -36,6 +36,11 @@ _PREVIEW_VERSION = re.compile(
 _STABLE_VERSION = re.compile(r"^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)$")
 _PHASE_LABELS = {"alpha": "prerelease:alpha", "beta": "prerelease:beta", "rc": "prerelease:rc"}
 _AUTHORIZED_PERMISSIONS = frozenset({"write", "maintain", "admin"})
+_IDENTITY_COMMENT_PREFIX = "<!-- gel-candidate-identity: "
+_IDENTITY_COMMENT = re.compile(
+    r"^<!-- gel-candidate-identity: (?P<payload>\{.*\}) -->$",
+    re.MULTILINE,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -326,19 +331,23 @@ def check_stable_merge(
 
 
 def _body_identity(release: Mapping[str, object]) -> Mapping[str, object]:
-    """Read the candidate identity the staging workflow wrote to the body.
+    """Read the hidden or legacy candidate identity from a release body.
 
-    ``release-candidate.yml`` creates every candidate draft with ``body`` set
-    to :func:`candidate_identity_body` output, so the one accepted shape is a
-    JSON object carrying a ``candidate_identity`` object member.
+    New drafts show their changelog and carry the machine identity in an HTML
+    comment. Published candidates created before that format remain valid for
+    idempotent retries through the legacy whole-body JSON fallback.
     """
 
     tag = release.get("tag_name")
     body = release.get("body")
     if not isinstance(body, str) or not body.strip():
         raise ValueError(f"release {tag!r} has no candidate identity body")
+    comments = list(_IDENTITY_COMMENT.finditer(body))
+    if len(comments) > 1:
+        raise ValueError(f"release {tag!r} body has more than one candidate identity comment")
+    payload = comments[0].group("payload") if comments else body
     try:
-        parsed = json.loads(body)
+        parsed = json.loads(payload)
     except json.JSONDecodeError as error:
         raise ValueError(f"release {tag!r} body is not candidate identity JSON: {error}") from error
     if not isinstance(parsed, Mapping):
@@ -432,9 +441,46 @@ def select_draft(
 
 
 def candidate_identity_body(identity: CandidateIdentity | Mapping[str, object]) -> str:
-    """Serialize an identity for the release body used by retry checks."""
+    """Serialize the legacy whole-body identity format."""
 
     return json.dumps({"candidate_identity": _coerce_identity(identity).as_dict()}, sort_keys=True)
+
+
+def _candidate_changelog_section(identity: CandidateIdentity, changelog: str) -> str:
+    """Select the release's version section from a Knope changelog."""
+
+    match = _PREVIEW_VERSION.fullmatch(identity.version)
+    version = match.group("base") if match is not None else identity.version
+    heading = re.compile(rf"^##[ \t]+{re.escape(version)}(?:[ \t].*)?$")
+    section_heading = re.compile(r"^##[ \t]+")
+    lines = changelog.splitlines()
+    starts = [index for index, line in enumerate(lines) if heading.fullmatch(line)]
+    if len(starts) != 1:
+        raise ValueError(
+            f"changelog must contain exactly one section for {version}, found {len(starts)}"
+        )
+    start = starts[0]
+    end = next(
+        (index for index in range(start + 1, len(lines)) if section_heading.match(lines[index])),
+        len(lines),
+    )
+    section = "\n".join(lines[start:end]).strip()
+    if "\n" not in section or not section.split("\n", 1)[1].strip():
+        raise ValueError(f"changelog section for {version} has no release notes")
+    if _IDENTITY_COMMENT_PREFIX in section:
+        raise ValueError(f"changelog section for {version} contains a reserved identity marker")
+    return section
+
+
+def candidate_release_body(
+    identity: CandidateIdentity | Mapping[str, object], changelog: str
+) -> str:
+    """Render visible release notes plus a hidden retry identity."""
+
+    validated = _coerce_identity(identity)
+    notes = _candidate_changelog_section(validated, changelog)
+    payload = candidate_identity_body(validated)
+    return f"{notes}\n\n{_IDENTITY_COMMENT_PREFIX}{payload} -->\n"
 
 
 def _labels(pr: Mapping[str, object]) -> list[str]:

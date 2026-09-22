@@ -195,6 +195,17 @@ class ControllerTriggerContractTests(unittest.TestCase):
 
 
 class CandidateInputContractTests(unittest.TestCase):
+    def test_candidate_draft_body_uses_the_checked_out_changelog(self):
+        stage = _workflow("release-candidate.yml")["jobs"]["stage"]
+        select = next(
+            step
+            for step in _steps(stage)
+            if step.get("name") == "Select the exact unpublished draft"
+        )
+        run = str(select.get("run", ""))
+        self.assertIn("candidate_release_body", run)
+        self.assertIn("CHANGELOG.md", run)
+
     def test_archive_layout_checks_do_not_sigpipe_the_listing_commands(self):
         stage = _workflow("release-candidate.yml")["jobs"]["stage"]
         check = next(step for step in _steps(stage) if step.get("name") == "Assert archive layouts")

@@ -616,6 +616,57 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
         "version": "7.1.0",
         "channel": "stable",
     }
+    CHANGELOG = """\
+## 7.1.0 (2026-09-22)
+
+### Features
+
+- Ship the release-line pipeline.
+
+## 7.0.2 (2026-08-10)
+
+### Fixes
+
+- Preserve an older release note.
+"""
+
+    def test_candidate_release_body_shows_changelog_and_hides_identity(self):
+        identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
+
+        body = github_release.candidate_release_body(identity, self.CHANGELOG)
+
+        visible, marker = body.split("\n\n<!-- gel-candidate-identity: ", 1)
+        self.assertEqual(
+            visible,
+            "## 7.1.0 (2026-09-22)\n\n### Features\n\n- Ship the release-line pipeline.",
+        )
+        self.assertTrue(marker.endswith(" -->\n"))
+        release = self._draft(identity.as_dict(), body=body)
+        selection = github_release.select_draft([release], identity)
+        self.assertIsNotNone(selection)
+        self.assertTrue(selection.reusable)
+
+    def test_preview_release_body_uses_the_base_version_changelog(self):
+        identity = github_release.CandidateIdentity.from_dict(
+            {
+                **self.IDENTITY,
+                "build_sha": "d" * 40,
+                "phase": "rc",
+                "version": "7.1.0-rc.1",
+                "channel": "testing",
+            }
+        )
+
+        body = github_release.candidate_release_body(identity, self.CHANGELOG)
+
+        self.assertTrue(body.startswith("## 7.1.0 (2026-09-22)\n"))
+        self.assertNotIn("## 7.0.2", body)
+
+    def test_candidate_release_body_rejects_a_missing_changelog_section(self):
+        identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
+
+        with self.assertRaisesRegex(ValueError, "changelog.*7.1.0"):
+            github_release.candidate_release_body(identity, "## 7.0.2 (2026-08-10)\n")
 
     def test_live_pr_matching_identity_is_accepted(self):
         identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
@@ -644,13 +695,17 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
     def _draft(self, identity: dict[str, object], **overrides: object) -> dict:
         """Build the draft exactly as release-candidate.yml creates it."""
 
+        base_version = str(identity["version"]).split("-", 1)[0]
         release = {
             "id": 123,
             "tag_name": f"v{identity['version']}",
             "name": f"v{identity['version']}",
             "draft": True,
             "prerelease": identity["phase"] is not None,
-            "body": json.dumps({"candidate_identity": identity}),
+            "body": github_release.candidate_release_body(
+                identity,
+                f"## {base_version} (2026-09-22)\n\n- Candidate release notes.\n",
+            ),
         }
         release.update(overrides)
         return release
@@ -670,8 +725,9 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
     def test_draft_with_same_tag_but_different_line_fails_closed(self):
         identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
         other = {**identity.as_dict(), "line": "release/v8.x"}
+        release = self._draft(identity.as_dict(), body=json.dumps({"candidate_identity": other}))
         with self.assertRaisesRegex(ValueError, "identity|line"):
-            github_release.select_draft([self._draft(other)], identity)
+            github_release.select_draft([release], identity)
 
     def test_older_drafts_and_published_releases_on_same_line_do_not_block_new_tag(self):
         identity = github_release.CandidateIdentity.from_dict(self.IDENTITY)
@@ -716,7 +772,10 @@ class CandidateIdentityBoundaryTests(unittest.TestCase):
         for changed in ("line", "pr_number"):
             different = dict(stale)
             different[changed] = "release/v8.x" if changed == "line" else 102
-            changed_release = {**release, "body": json.dumps({"candidate_identity": different})}
+            changed_release = {
+                **release,
+                "body": json.dumps({"candidate_identity": different}),
+            }
             with (
                 self.subTest(changed=changed),
                 self.assertRaisesRegex(ValueError, "identity|line|PR"),
@@ -1177,16 +1236,21 @@ class PublicationTests(unittest.TestCase):
         draft: bool = True,
     ) -> dict:
         # The publish workflows pass `gh api repos/:owner/:repo/releases/:id`
-        # straight through: the identity lives in the body and no bytes are
-        # inlined.  A tag target is resolved from the Git ref, not the payload.
+        # straight through: the identity lives in a hidden body comment and no
+        # bytes are inlined. A tag target is resolved from the Git ref, not the
+        # payload.
         del record
+        base_version = str(identity["version"]).split("-", 1)[0]
         return {
             "id": 123456,
             "tag_name": f"v{identity['version']}",
             "name": f"v{identity['version']}",
             "draft": draft,
             "prerelease": identity["phase"] is not None,
-            "body": github_release.candidate_identity_body(identity),
+            "body": github_release.candidate_release_body(
+                identity,
+                f"## {base_version} (2026-09-22)\n\n- Candidate release notes.\n",
+            ),
         }
 
     def test_preview_rejects_removed_phase_before_mutation(self):
@@ -1226,6 +1290,7 @@ class PublicationTests(unittest.TestCase):
         identity = self._preview_identity()
         record = self._record(identity)
         release = self._release(identity, record, draft=False)
+        release["body"] = github_release.candidate_identity_body(identity)
         with mock.patch.object(
             verify_draft, "resolve_tag_commit", return_value=identity["build_sha"]
         ):
