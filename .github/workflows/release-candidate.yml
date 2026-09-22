@@ -489,10 +489,11 @@ jobs:
           body="$(PYTHONPATH=. uv run --frozen python - "$RUNNER_TEMP/candidate-identity.json" <<'PY'
           import json
           import sys
-          from gel_release.github_release import CandidateIdentity, candidate_identity_body
+          from pathlib import Path
+          from gel_release.github_release import CandidateIdentity, candidate_release_body
 
           identity = CandidateIdentity.from_dict(json.load(open(sys.argv[1])))
-          print(candidate_identity_body(identity))
+          print(candidate_release_body(identity, Path("CHANGELOG.md").read_text()))
           PY
           )"
           selection="$(PYTHONPATH=. uv run --frozen gel-release select-draft \
